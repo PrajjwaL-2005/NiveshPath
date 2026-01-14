@@ -1,29 +1,24 @@
 import { Link } from "react-router-dom";
-import { useContext } from "react";
-import { AuthContext } from "../../context/AuthContext";
 
 const Navbar = () => {
-  const { user, logout } = useContext(AuthContext);
-
   return (
-    <nav className="flex items-center justify-between px-6 py-4 border-b bg-white">
-      <h1 className="text-xl font-bold text-blue-600">
-        NiveshPath
-      </h1>
+    <nav className="bg-white border-b shadow-sm">
+      <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
 
-      {user && (
-        <div className="flex gap-4 items-center">
-          <Link to="/" className="hover:text-blue-600">Dashboard</Link>
-          <Link to="/trade" className="hover:text-blue-600">Trade</Link>
-          <Link to="/portfolio" className="hover:text-blue-600">Portfolio</Link>
-          <button
-            onClick={logout}
-            className="px-3 py-1 bg-red-500 text-white rounded"
-          >
-            Logout
-          </button>
+        {/* LOGO */}
+        <h1 className="text-2xl font-bold text-blue-600">
+          StockPilot
+        </h1>
+
+        {/* LINKS */}
+        <div className="flex gap-8 text-gray-700 font-medium">
+          <Link className="hover:text-blue-600" to="/">Dashboard</Link>
+          <Link className="hover:text-blue-600" to="/trade">Trade</Link>
+          <Link className="hover:text-blue-600" to="/portfolio">Portfolio</Link>
+          <Link className="hover:text-blue-600" to="/news">News</Link>
         </div>
-      )}
+
+      </div>
     </nav>
   );
 };
