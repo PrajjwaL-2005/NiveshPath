@@ -8,7 +8,7 @@ import tradeRoutes from "./routes/tradeRoutes.js";
 import portfolioRoutes from "./routes/portfolioRoutes.js";
 import stockRoutes from "./routes/stockRoutes.js";
 import errorHandler from "./middleware/errorMiddleware.js";
-
+import userRoutes from "./routes/userRoutes.js";
 import newsRoutes from "./routes/newsRoutes.js";
 
 
@@ -27,6 +27,7 @@ app.use("/api/trade", tradeRoutes);
 app.use("/api/portfolio", portfolioRoutes);
 app.use("/api/stocks", stockRoutes);
 app.use("/api/news", newsRoutes);
+app.use("/api/users", userRoutes);
 
 app.get("/", (req, res) => {
   res.send("🚀 StockPilot API running...");

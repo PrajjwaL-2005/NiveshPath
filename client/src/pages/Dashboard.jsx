@@ -1,4 +1,23 @@
+import { useEffect } from "react";
+import { useAuth } from "../hooks/useAuth";
+import { getMe } from "../services/userService";
+
 const Dashboard = () => {
+  const { virtualBalance, setVirtualBalance } = useAuth();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await getMe();
+        setVirtualBalance(res.data.virtualBalance);
+      } catch (err) {
+        console.error("Failed to fetch wallet balance");
+      }
+    };
+
+    fetchUser();
+  }, []);
+
   return (
     <div className="max-w-7xl mx-auto px-6 py-8 space-y-8 bg-gray-50 min-h-screen">
 
@@ -16,7 +35,11 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
           title="Wallet Balance"
-          value="₹100,000"
+          value={
+            virtualBalance === null
+              ? "Loading..."
+              : `₹${virtualBalance.toLocaleString()}`
+          }
           color="text-green-600"
         />
         <StatCard
