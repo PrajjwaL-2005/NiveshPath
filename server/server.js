@@ -1,5 +1,8 @@
-import express from "express";
 import dotenv from "dotenv";
+dotenv.config();
+
+import express from "express";
+
 import cors from "cors";
 
 import connectDB from "./config/db.js";
@@ -12,8 +15,8 @@ import userRoutes from "./routes/userRoutes.js";
 import newsRoutes from "./routes/newsRoutes.js";
 
 
-dotenv.config();
 connectDB();
+console.log("FINNHUB KEY:", process.env.FINNHUB_API_KEY);
 
 const app = express();
 

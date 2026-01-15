@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { searchStocks } from "../../services/stockService";
 
 const StockSearch = ({ onSelect }) => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (query.length < 2) {
@@ -15,18 +18,13 @@ const StockSearch = ({ onSelect }) => {
     const timer = setTimeout(async () => {
       try {
         setLoading(true);
-
         const res = await searchStocks(query);
 
-        // 🛡️ DEFENSIVE NORMALIZATION
         let list = [];
-
         if (Array.isArray(res.data)) {
           list = res.data;
         } else if (Array.isArray(res.data?.results)) {
           list = res.data.results;
-        } else {
-          list = [];
         }
 
         setResults(list);
@@ -40,6 +38,20 @@ const StockSearch = ({ onSelect }) => {
 
     return () => clearTimeout(timer);
   }, [query]);
+
+  const handleSelect = (stock) => {
+    const symbol = stock.symbol;
+    if (!symbol) return;
+
+    setQuery(symbol);
+    setResults([]);
+
+    // ✅ Navigate to stock detail page
+    navigate(`/stocks/${symbol}`);
+
+    // Optional: keep callback if parent needs it
+    if (onSelect) onSelect(stock);
+  };
 
   return (
     <div className="relative max-w-md">
@@ -62,17 +74,13 @@ const StockSearch = ({ onSelect }) => {
             <li
               key={stock.symbol ?? idx}
               className="p-2 hover:bg-gray-100 cursor-pointer"
-              onClick={() => {
-                onSelect(stock);
-                setQuery(stock.symbol ?? "");
-                setResults([]);
-              }}
+              onClick={() => handleSelect(stock)}
             >
               <div className="font-medium">
                 {stock.symbol ?? "N/A"}
               </div>
               <div className="text-xs text-gray-500">
-                {stock.name ?? ""}
+                {stock.description ?? stock.name ?? ""}
               </div>
             </li>
           ))}

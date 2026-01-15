@@ -6,6 +6,8 @@ import Dashboard from "./pages/Dashboard";
 import Trading from "./pages/Trading";
 import Portfolio from "./pages/Portfolio";
 import News from "./pages/News";
+import StockDetail from "./pages/StockDetail";
+
 
 // inside <Routes>
 
@@ -26,6 +28,7 @@ function App() {
           <Route path="/news" element={<News />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/stocks/:symbol" element={<StockDetail />} />
         </Routes>
       </div>
     </BrowserRouter>

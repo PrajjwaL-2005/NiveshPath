@@ -4,5 +4,7 @@ export const searchStocks = (query) =>
   api.get(`/stocks/search?q=${query}`);
 
 
-export const fetchStockPrice = (symbol) =>
-    api.get(`/stocks/${symbol}`);
+export const getStockDetails = async (symbol) => {
+  const response = await api.get(`/stocks/${symbol}/details`);
+  return response.data;
+};
