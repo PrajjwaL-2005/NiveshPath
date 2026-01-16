@@ -4,6 +4,28 @@ const finnhub = axios.create({
   baseURL: "https://finnhub.io/api/v1",
 });
 
+
+// 📈 Get stock candles (for charts)
+export const fetchStockCandlesFromFinnhub = async (
+  symbol,
+  resolution,
+  from,
+  to
+) => {
+  const response = await finnhub.get("/stock/candle", {
+    params: {
+      symbol,
+      resolution,
+      from,
+      to,
+      token: process.env.FINNHUB_API_KEY,
+    },
+  });
+
+  return response.data;
+};
+
+
 // 🔍 Search stocks
 export const searchStocksFromFinnhub = async (query) => {
   const response = await finnhub.get("/search", {
