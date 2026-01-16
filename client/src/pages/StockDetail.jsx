@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getStockDetails } from "../services/stockService";
 import Loader from "../components/common/Loader";
+import PriceChart from "../components/stocks/PriceChart";
 
 const StockDetail = () => {
   const { symbol } = useParams();
@@ -53,6 +54,10 @@ const StockDetail = () => {
         <div>52W High: {metrics["52WeekHigh"]}</div>
         <div>52W Low: {metrics["52WeekLow"]}</div>
       </div>
+
+      {/* Chart */}
+<PriceChart symbol={symbol} />
+
 
       {/* Description */}
       <p className="mt-6 text-gray-700">

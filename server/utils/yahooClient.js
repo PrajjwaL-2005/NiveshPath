@@ -4,9 +4,20 @@ const yahooFinance = new YahooFinance();
 
 export const fetchStockCandlesFromYahoo = async (symbol, range) => {
   let yahooSymbol = symbol.toUpperCase();
-  if (!yahooSymbol.includes(".")) {
+
+// If symbol already has exchange (AAPL, AAPL.US, INFY.NS)
+if (yahooSymbol.includes(".")) {
+  // do nothing
+} else {
+  // Heuristic: Indian stocks are usually NOT all caps US tickers
+  // Default rule: treat common US stocks as US, rest as NSE
+  const usStocks = ["AAPL", "MSFT", "GOOGL", "AMZN", "META", "NVDA", "TSLA"];
+
+  if (!usStocks.includes(yahooSymbol)) {
     yahooSymbol = `${yahooSymbol}.NS`;
   }
+}
+
 
   const now = new Date();
   let from;
@@ -15,12 +26,12 @@ export const fetchStockCandlesFromYahoo = async (symbol, range) => {
   switch (range) {
     case "1D":
       from = new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000);
-      interval = "5m";
+      interval = "1d";
       break;
 
     case "7D":
-      from = new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000);
-      interval = "30m";
+      from = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      interval = "1d";
       break;
 
     case "1M":
@@ -42,11 +53,12 @@ export const fetchStockCandlesFromYahoo = async (symbol, range) => {
       throw new Error("Invalid range");
   }
 
+  // ✅ DEFINE result properly
   const result = await yahooFinance.historical(yahooSymbol, {
     period1: from,
     period2: now,
     interval,
   });
 
-  return result;
+  return result; // ✅ now this exists
 };
