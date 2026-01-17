@@ -3,11 +3,19 @@ import Trade from "../models/Trade.js";
 import User from "../models/User.js";
 
 export const getPortfolio = async (req, res) => {
-  const holdings = await Portfolio.find({ userId: req.user.id });
-  const user = await User.findById(req.user.id);
-  res.json({ holdings, balance: user.virtualBalance });
-};
+  try {
+    const userId = req.user.id || req.user._id || req.user.userId;
 
+    const holdings = await Portfolio.find({ userId });
+
+    res.json({
+      holdings,
+    });
+  } catch (error) {
+    console.error("PORTFOLIO ERROR:", error);
+    res.status(500).json({ message: "Failed to fetch portfolio" });
+  }
+};
 export const getTrades = async (req, res) => {
   const trades = await Trade.find({ userId: req.user.id }).sort({ timestamp: -1 });
   res.json(trades);
