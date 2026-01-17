@@ -1,22 +1,41 @@
-import { useEffect } from "react";
+import { useEffect ,useState} from "react";
 import { useAuth } from "../hooks/useAuth";
 import { getMe } from "../services/userService";
+import { getPortfolio } from "../services/portfolioService";
 
 const Dashboard = () => {
   const { virtualBalance, setVirtualBalance } = useAuth();
+  const [investedAmount, setInvestedAmount] = useState(0);
+  const [activeStocks, setActiveStocks] = useState(0);
+
 
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchDashboardData = async () => {
       try {
+        // Wallet balance (existing logic)
         const res = await getMe();
         setVirtualBalance(res.data.virtualBalance);
+
+        // Portfolio data
+        const portfolioRes = await getPortfolio();
+        const holdings = portfolioRes.data.holdings;
+
+        // Calculate invested amount
+        const totalInvested = holdings.reduce(
+          (sum, stock) => sum + stock.quantity * stock.avgBuyPrice,
+          0
+        );
+
+        setInvestedAmount(totalInvested);
+        setActiveStocks(holdings.length);
       } catch (err) {
-        console.error("Failed to fetch wallet balance");
+        console.error("Failed to fetch dashboard data");
       }
     };
 
-    fetchUser();
+    fetchDashboardData();
   }, []);
+
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-8 space-y-8 bg-gray-50 min-h-screen">
@@ -38,14 +57,15 @@ const Dashboard = () => {
           value={
             virtualBalance === null
               ? "Loading..."
-              : `₹${virtualBalance.toLocaleString()}`
+              : `$${virtualBalance.toLocaleString()}`
           }
           color="text-green-600"
         />
         <StatCard
           title="Invested Amount"
-          value="₹75,000"
+          value={`$${investedAmount.toLocaleString()}`}
         />
+
         <StatCard
           title="Total P&L"
           value="+₹12,500"
@@ -53,7 +73,7 @@ const Dashboard = () => {
         />
         <StatCard
           title="Active Stocks"
-          value="8"
+          value={activeStocks}
         />
       </div>
 

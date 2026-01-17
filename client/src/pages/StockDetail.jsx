@@ -4,6 +4,7 @@ import { getStockDetails } from "../services/stockService";
 import { buyStock, sellStock } from "../services/tradeService";
 import Loader from "../components/common/Loader";
 import PriceChart from "../components/stocks/PriceChart";
+import StockChat from "../components/ai/StockChat";
 
 const StockDetail = () => {
   const { symbol } = useParams();
@@ -96,6 +97,15 @@ const StockDetail = () => {
         <p className="mt-6 text-gray-700">
           {profile.description}
         </p>
+        {/* 🤖 AI STOCK CHAT */}
+        <StockChat
+          symbol={symbol}
+          stockData={{
+            profile,
+            price,
+            metrics,
+          }}
+        />
       </div>
 
       {/* RIGHT SECTION — BUY / SELL */}
