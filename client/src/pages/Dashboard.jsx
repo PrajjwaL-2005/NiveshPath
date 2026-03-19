@@ -1,26 +1,42 @@
-import { useEffect ,useState} from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
+import { Eye, EyeOff } from "lucide-react";
 import { getMe } from "../services/userService";
 import { getPortfolio } from "../services/portfolioService";
+import OutlineButton from "../components/ui/OutlineButton";
 
 const Dashboard = () => {
   const { virtualBalance, setVirtualBalance } = useAuth();
+
   const [investedAmount, setInvestedAmount] = useState(0);
   const [activeStocks, setActiveStocks] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
 
+  // ✅ Load visibility preference
+  useEffect(() => {
+    const saved = localStorage.getItem("balanceVisible");
+    if (saved !== null) setIsVisible(saved === "true");
+  }, []);
+
+  // ✅ Save preference
+  useEffect(() => {
+    localStorage.setItem("balanceVisible", isVisible);
+  }, [isVisible]);
+
+  // ✅ Mask helper
+  const maskValue = (value) => {
+    return isVisible ? value : "₹ ••••••";
+  };
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        // Wallet balance (existing logic)
         const res = await getMe();
         setVirtualBalance(res.data.virtualBalance);
 
-        // Portfolio data
         const portfolioRes = await getPortfolio();
         const holdings = portfolioRes.data.holdings;
 
-        // Calculate invested amount
         const totalInvested = holdings.reduce(
           (sum, stock) => sum + stock.quantity * stock.avgBuyPrice,
           0
@@ -36,51 +52,64 @@ const Dashboard = () => {
     fetchDashboardData();
   }, []);
 
-
   return (
     <div className="max-w-7xl mx-auto px-6 py-8 space-y-8 bg-gray-50 min-h-screen">
 
       {/* HEADER */}
-      <div>
-        <h1 className="text-2xl font-semibold text-gray-800">
-          Dashboard
-        </h1>
-        <p className="text-gray-500 text-sm mt-1">
-          Overview of your portfolio and market activity
-        </p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-semibold text-gray-800">
+            Dashboard
+          </h1>
+          <p className="text-gray-500 text-sm mt-1">
+            Overview of your portfolio and market activity
+          </p>
+        </div>
+
+        {/* Toggle Button */}
+        <OutlineButton
+  onClick={() => setIsVisible((prev) => !prev)}
+  className="px-4 py-2 text-sm flex items-center gap-2"
+>
+  {isVisible ? <EyeOff size={16} /> : <Eye size={16} />}
+  {isVisible ? "Hide Balance" : "Show Balance"}
+</OutlineButton>
       </div>
 
-      {/* TOP STATS */}
+      {/* STATS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
         <StatCard
           title="Wallet Balance"
           value={
             virtualBalance === null
               ? "Loading..."
-              : `$${virtualBalance.toLocaleString()}`
+              : maskValue(`₹${virtualBalance.toLocaleString()}`)
           }
           color="text-green-600"
         />
+
         <StatCard
           title="Invested Amount"
-          value={`$${investedAmount.toLocaleString()}`}
+          value={maskValue(`₹${investedAmount.toLocaleString()}`)}
         />
 
         <StatCard
           title="Total P&L"
-          value="+₹12,500"
+          value={maskValue("+₹12,500")}
           color="text-green-600"
         />
+
         <StatCard
           title="Active Stocks"
-          value={activeStocks}
+          value={activeStocks} // not masked (non-sensitive)
         />
+
       </div>
 
-      {/* MAIN CONTENT */}
+      {/* MAIN */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        {/* STOCKS SECTION */}
         <div className="lg:col-span-2 bg-white rounded-xl shadow p-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">
             Your Stocks
@@ -91,7 +120,6 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* RECENT ACTIVITY */}
         <div className="bg-white rounded-xl shadow p-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">
             Recent Activity
@@ -103,6 +131,7 @@ const Dashboard = () => {
             <li>• Wallet credited ₹10,000</li>
           </ul>
         </div>
+
       </div>
     </div>
   );
