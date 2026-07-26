@@ -1,4 +1,5 @@
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { buyStock, sellStock } from "../../services/tradeService";
 import { useAuth } from "../../hooks/useAuth";
 
@@ -18,7 +19,7 @@ const TradePanel = ({ symbol, price }) => {
       setError(null);
       const res = await buyStock(symbol, quantity);
       setVirtualBalance(res.data.virtualBalance);
-      alert("Buy successful");
+      toast.success("Buy successful");
     } catch (err) {
       setError(err.response?.data?.message || "Buy failed");
     } finally {
@@ -32,7 +33,7 @@ const TradePanel = ({ symbol, price }) => {
       setError(null);
       const res = await sellStock(symbol, quantity);
       setVirtualBalance(res.data.virtualBalance);
-      alert("Sell successful");
+      toast.success("Sell successful");
     } catch (err) {
       setError(err.response?.data?.message || "Sell failed");
     } finally {

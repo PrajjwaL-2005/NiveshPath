@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { getStockDetails } from "../services/stockService";
 import { buyStock, sellStock } from "../services/tradeService";
 import Loader from "../components/common/Loader";
@@ -36,7 +37,7 @@ const StockDetail = () => {
       setTradeLoading(true);
       setError(null);
       await buyStock(symbol, quantity);
-      alert("Buy order executed");
+      toast.success("Buy order executed");
     } catch (err) {
       setError(err.response?.data?.message || "Buy failed");
     } finally {
@@ -49,7 +50,7 @@ const StockDetail = () => {
       setTradeLoading(true);
       setError(null);
       await sellStock(symbol, quantity);
-      alert("Sell order executed");
+      toast.success("Sell order executed");
     } catch (err) {
       setError(err.response?.data?.message || "Sell failed");
     } finally {

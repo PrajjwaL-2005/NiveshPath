@@ -10,7 +10,7 @@ const Dashboard = () => {
   const { virtualBalance, setVirtualBalance } = useAuth();
 
   const [investedAmount, setInvestedAmount] = useState(0);
-  const [activeStocks, setActiveStocks] = useState(0);
+  const [holdingsData, setHoldingsData] = useState([]);
   const [totalPnL, setTotalPnL] = useState(0);
   const [recentActivity, setRecentActivity] = useState([]);
   const [isVisible, setIsVisible] = useState(false);
@@ -44,24 +44,29 @@ const Dashboard = () => {
           (sum, stock) => sum + stock.quantity * stock.avgBuyPrice,
           0
         );
-
         setInvestedAmount(totalInvested);
-        setActiveStocks(holdings.length);
 
-        // ✅ Unrealized P&L from live quotes
+        // ✅ Live quotes per holding — feeds both the stock list and Total P&L
         if (holdings.length > 0) {
           const quotes = await Promise.all(
             holdings.map((h) => getStockQuote(h.symbol).catch(() => null))
           );
 
-          const pnl = holdings.reduce((sum, holding, i) => {
-            const currentPrice = quotes[i]?.c;
-            if (!currentPrice) return sum;
-            return sum + (currentPrice - holding.avgBuyPrice) * holding.quantity;
-          }, 0);
+          const enriched = holdings.map((holding, i) => {
+            const currentPrice = quotes[i]?.c ?? null;
+            const pnl =
+              currentPrice != null
+                ? (currentPrice - holding.avgBuyPrice) * holding.quantity
+                : null;
+            return { ...holding, currentPrice, pnl };
+          });
 
-          setTotalPnL(pnl);
+          setHoldingsData(enriched);
+          setTotalPnL(
+            enriched.reduce((sum, h) => sum + (h.pnl ?? 0), 0)
+          );
         } else {
+          setHoldingsData([]);
           setTotalPnL(0);
         }
 
@@ -130,7 +135,7 @@ const Dashboard = () => {
 
         <StatCard
           title="Active Stocks"
-          value={activeStocks} // not masked (non-sensitive)
+          value={holdingsData.length} // not masked (non-sensitive)
         />
 
       </div>
@@ -143,9 +148,50 @@ const Dashboard = () => {
             Your Stocks
           </h3>
 
-          <div className="border rounded-lg p-4 text-gray-500 text-sm">
-            Stock list, price changes, charts, and P&L will appear here.
-          </div>
+          {holdingsData.length === 0 ? (
+            <div className="border rounded-lg p-6 text-center text-gray-500 text-sm">
+              No holdings yet. Buy your first stock to see it here.
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {holdingsData.map((holding) => (
+                <div
+                  key={holding._id}
+                  className="flex justify-between items-center border-b last:border-b-0 pb-3 last:pb-0"
+                >
+                  <div>
+                    <p className="font-medium text-gray-800">{holding.symbol}</p>
+                    <p className="text-xs text-gray-500">
+                      {holding.quantity} shares @ ₹{holding.avgBuyPrice.toLocaleString()}
+                    </p>
+                  </div>
+
+                  <div className="text-right">
+                    <p className="text-gray-800">
+                      {holding.currentPrice != null
+                        ? `₹${holding.currentPrice.toLocaleString()}`
+                        : "—"}
+                    </p>
+                    <p
+                      className={`text-xs ${
+                        holding.pnl == null
+                          ? "text-gray-400"
+                          : holding.pnl >= 0
+                          ? "text-green-600"
+                          : "text-red-600"
+                      }`}
+                    >
+                      {holding.pnl == null
+                        ? "—"
+                        : `${holding.pnl >= 0 ? "+" : "-"}₹${Math.abs(
+                            holding.pnl
+                          ).toLocaleString(undefined, { maximumFractionDigits: 2 })}`}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="bg-white rounded-xl shadow p-6">

@@ -12,7 +12,7 @@ const StockCard = ({ stock }) => {
 
   return (
     <div
-      onClick={() => navigate(`/stock/${stock.symbol}`)}
+      onClick={() => navigate(`/stocks/${stock.symbol}`)}
       className="flex justify-between items-center border rounded-lg px-4 py-3 cursor-pointer hover:bg-gray-50 transition"
     >
       {/* LEFT */}
