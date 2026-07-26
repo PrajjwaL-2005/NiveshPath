@@ -60,7 +60,7 @@ const StockDetail = () => {
   if (loading) return <Loader />;
   if (!data) return <p>No data available</p>;
 
-  const { profile, price, metrics } = data;
+  const { profile = {}, price = {}, metrics = {} } = data;
 
   return (
     <div className="p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -68,24 +68,24 @@ const StockDetail = () => {
       <div className="lg:col-span-2">
         {/* Header */}
         <h1 className="text-2xl font-bold">
-          {profile.name} ({profile.ticker})
+          {profile?.name ?? symbol} ({profile?.ticker ?? symbol})
         </h1>
-        <p className="text-gray-500">{profile.exchange}</p>
+        <p className="text-gray-500">{profile?.exchange ?? "—"}</p>
 
         {/* Price */}
         <div className="mt-4">
-          <p className="text-xl font-semibold">₹ {price.c}</p>
+          <p className="text-xl font-semibold">₹ {price?.c ?? "N/A"}</p>
           <p className="text-sm text-gray-500">
-            Open: {price.o} | High: {price.h} | Low: {price.l}
+            Open: {price?.o ?? "N/A"} | High: {price?.h ?? "N/A"} | Low: {price?.l ?? "N/A"}
           </p>
         </div>
 
         {/* Metrics */}
         <div className="grid grid-cols-2 gap-4 mt-6">
-          <div>Market Cap: {profile.marketCapitalization}</div>
-          <div>P/E: {metrics.peBasicExclExtraTTM}</div>
-          <div>52W High: {metrics["52WeekHigh"]}</div>
-          <div>52W Low: {metrics["52WeekLow"]}</div>
+          <div>Market Cap: {profile?.marketCapitalization ?? "N/A"}</div>
+          <div>P/E: {metrics?.peBasicExclExtraTTM ?? "N/A"}</div>
+          <div>52W High: {metrics?.["52WeekHigh"] ?? "N/A"}</div>
+          <div>52W Low: {metrics?.["52WeekLow"] ?? "N/A"}</div>
         </div>
 
         {/* Chart */}
@@ -95,7 +95,7 @@ const StockDetail = () => {
 
         {/* Description */}
         <p className="mt-6 text-gray-700">
-          {profile.description}
+          {profile?.description ?? "No description available."}
         </p>
         {/* 🤖 AI STOCK CHAT */}
         <StockChat
@@ -113,7 +113,7 @@ const StockDetail = () => {
         <h2 className="text-lg font-semibold mb-4">Trade</h2>
 
         <p className="mb-2">
-          {profile.ticker} @ ₹{price.c}
+          {profile?.ticker ?? symbol} @ ₹{price?.c ?? "N/A"}
         </p>
 
         <input

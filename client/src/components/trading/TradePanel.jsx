@@ -4,6 +4,8 @@ import { useAuth } from "../../hooks/useAuth";
 
 const TradePanel = ({ symbol, price }) => {
   const [quantity, setQuantity] = useState(1);
+  const [tradeLoading, setTradeLoading] = useState(false);
+  const [error, setError] = useState(null);
   const { setVirtualBalance } = useAuth();
 
   if (!symbol) {
@@ -11,15 +13,31 @@ const TradePanel = ({ symbol, price }) => {
   }
 
   const handleBuy = async () => {
-    const res = await buyStock(symbol, quantity);
-    setVirtualBalance(res.data.virtualBalance);
-    alert("Buy successful");
+    try {
+      setTradeLoading(true);
+      setError(null);
+      const res = await buyStock(symbol, quantity);
+      setVirtualBalance(res.data.virtualBalance);
+      alert("Buy successful");
+    } catch (err) {
+      setError(err.response?.data?.message || "Buy failed");
+    } finally {
+      setTradeLoading(false);
+    }
   };
 
   const handleSell = async () => {
-    const res = await sellStock(symbol, quantity);
-    setVirtualBalance(res.data.virtualBalance);
-    alert("Sell successful");
+    try {
+      setTradeLoading(true);
+      setError(null);
+      const res = await sellStock(symbol, quantity);
+      setVirtualBalance(res.data.virtualBalance);
+      alert("Sell successful");
+    } catch (err) {
+      setError(err.response?.data?.message || "Sell failed");
+    } finally {
+      setTradeLoading(false);
+    }
   };
 
   return (
@@ -36,19 +54,23 @@ const TradePanel = ({ symbol, price }) => {
         onChange={(e) => setQuantity(+e.target.value)}
       />
 
+      {error && <p className="text-red-600 text-sm">{error}</p>}
+
       <div className="flex gap-3">
         <button
           onClick={handleBuy}
-          className="bg-green-600 text-white px-4 py-2 rounded"
+          disabled={tradeLoading}
+          className="bg-green-600 text-white px-4 py-2 rounded disabled:opacity-50"
         >
-          Buy
+          {tradeLoading ? "Processing..." : "Buy"}
         </button>
 
         <button
           onClick={handleSell}
-          className="bg-red-600 text-white px-4 py-2 rounded"
+          disabled={tradeLoading}
+          className="bg-red-600 text-white px-4 py-2 rounded disabled:opacity-50"
         >
-          Sell
+          {tradeLoading ? "Processing..." : "Sell"}
         </button>
       </div>
     </div>

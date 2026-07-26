@@ -7,14 +7,24 @@ const Signup = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await api.post("/auth/signup", { name, email, password });
-    login(res.data);
-    navigate("/");
+    try {
+      setLoading(true);
+      setError(null);
+      const res = await api.post("/auth/signup", { name, email, password });
+      login(res.data);
+      navigate("/");
+    } catch (err) {
+      setError(err.response?.data?.message || "Signup failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -24,6 +34,8 @@ const Signup = () => {
         className="bg-white p-6 rounded w-96 space-y-4"
       >
         <h2 className="text-xl font-bold text-center">Signup</h2>
+
+        {error && <p className="text-red-600 text-sm text-center">{error}</p>}
 
         <input
           placeholder="Name"
@@ -47,8 +59,12 @@ const Signup = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        <button className="w-full bg-green-600 text-white p-2 rounded">
-          Create Account
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-green-600 text-white p-2 rounded disabled:opacity-50"
+        >
+          {loading ? "Creating account..." : "Create Account"}
         </button>
 
         <p className="text-sm text-center">
