@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { Eye, EyeOff } from "lucide-react";
 import { getMe } from "../services/userService";
-import { getPortfolio } from "../services/portfolioService";
+import { getPortfolio, getTrades } from "../services/portfolioService";
+import { getStockQuote } from "../services/stockService";
 import OutlineButton from "../components/ui/OutlineButton";
 
 const Dashboard = () => {
@@ -10,6 +11,8 @@ const Dashboard = () => {
 
   const [investedAmount, setInvestedAmount] = useState(0);
   const [activeStocks, setActiveStocks] = useState(0);
+  const [totalPnL, setTotalPnL] = useState(0);
+  const [recentActivity, setRecentActivity] = useState([]);
   const [isVisible, setIsVisible] = useState(false);
 
   // ✅ Load visibility preference
@@ -44,6 +47,27 @@ const Dashboard = () => {
 
         setInvestedAmount(totalInvested);
         setActiveStocks(holdings.length);
+
+        // ✅ Unrealized P&L from live quotes
+        if (holdings.length > 0) {
+          const quotes = await Promise.all(
+            holdings.map((h) => getStockQuote(h.symbol).catch(() => null))
+          );
+
+          const pnl = holdings.reduce((sum, holding, i) => {
+            const currentPrice = quotes[i]?.c;
+            if (!currentPrice) return sum;
+            return sum + (currentPrice - holding.avgBuyPrice) * holding.quantity;
+          }, 0);
+
+          setTotalPnL(pnl);
+        } else {
+          setTotalPnL(0);
+        }
+
+        // ✅ Recent trade activity
+        const tradesRes = await getTrades();
+        setRecentActivity(tradesRes.data.slice(0, 5));
       } catch (err) {
         console.error("Failed to fetch dashboard data");
       }
@@ -51,6 +75,10 @@ const Dashboard = () => {
 
     fetchDashboardData();
   }, []);
+
+  const pnlLabel = `${totalPnL >= 0 ? "+" : "-"}₹${Math.abs(
+    totalPnL
+  ).toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-8 space-y-8 bg-gray-50 min-h-screen">
@@ -96,8 +124,8 @@ const Dashboard = () => {
 
         <StatCard
           title="Total P&L"
-          value={maskValue("+₹12,500")}
-          color="text-green-600"
+          value={maskValue(pnlLabel)}
+          color={totalPnL >= 0 ? "text-green-600" : "text-red-600"}
         />
 
         <StatCard
@@ -125,11 +153,18 @@ const Dashboard = () => {
             Recent Activity
           </h3>
 
-          <ul className="space-y-3 text-sm text-gray-600">
-            <li>• Bought TCS (5 shares)</li>
-            <li>• Sold INFY (2 shares)</li>
-            <li>• Wallet credited ₹10,000</li>
-          </ul>
+          {recentActivity.length === 0 ? (
+            <p className="text-sm text-gray-500">No recent activity yet.</p>
+          ) : (
+            <ul className="space-y-3 text-sm text-gray-600">
+              {recentActivity.map((trade) => (
+                <li key={trade._id}>
+                  • {trade.type === "BUY" ? "Bought" : "Sold"} {trade.symbol}{" "}
+                  ({trade.quantity} shares)
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
       </div>

@@ -8,7 +8,7 @@ import { fetchStockPriceFromFinnhub } from "../utils/finnhubClient.js";
    BUY STOCK (MARKET ORDER)
 ============================ */
 export const buyStock = async (req, res) => {
-  const { symbol } = req.body;
+  const symbol = String(req.body.symbol || "").trim().toUpperCase();
   const quantity = Number(req.body.quantity);
 
   if (!symbol || !Number.isInteger(quantity) || quantity <= 0) {
@@ -107,7 +107,7 @@ export const buyStock = async (req, res) => {
    SELL STOCK (MARKET ORDER)
 ============================ */
 export const sellStock = async (req, res) => {
-  const { symbol } = req.body;
+  const symbol = String(req.body.symbol || "").trim().toUpperCase();
   const quantity = Number(req.body.quantity);
 
   if (!symbol || !Number.isInteger(quantity) || quantity <= 0) {
