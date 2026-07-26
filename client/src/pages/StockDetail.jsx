@@ -10,7 +10,7 @@ import {
   removeFromWatchlist,
 } from "../services/watchlistService";
 import { useAuth } from "../hooks/useAuth";
-import Loader from "../components/common/Loader";
+import DetailSkeleton from "../components/common/skeletons/DetailSkeleton";
 import PriceChart from "../components/stocks/PriceChart";
 import StockChat from "../components/ai/StockChat";
 
@@ -97,7 +97,7 @@ const StockDetail = () => {
     }
   };
 
-  if (loading) return <Loader />;
+  if (loading) return <DetailSkeleton />;
   if (!data) return <p>No data available</p>;
 
   const { profile = {}, price = {}, metrics = {} } = data;

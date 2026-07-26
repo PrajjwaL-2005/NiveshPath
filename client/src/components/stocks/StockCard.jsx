@@ -58,7 +58,7 @@ const StockCard = ({ stock }) => {
   return (
     <div
       onClick={() => navigate(`/stocks/${stock.symbol}`)}
-      className="flex justify-between items-center border rounded-lg px-4 py-3 cursor-pointer hover:bg-gray-50 transition"
+      className="flex justify-between items-center border rounded-lg px-4 py-3 cursor-pointer hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
     >
       {/* LEFT */}
       <div className="flex items-center gap-3">

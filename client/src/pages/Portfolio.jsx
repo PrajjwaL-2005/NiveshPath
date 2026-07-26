@@ -9,7 +9,8 @@ import {
 } from "recharts";
 import { getPortfolio } from "../services/portfolioService";
 import { getStockQuote } from "../services/stockService";
-import Loader from "../components/common/Loader";
+import TableRowSkeleton from "../components/common/skeletons/TableRowSkeleton";
+import GainLossBadge from "../components/common/GainLossBadge";
 
 const COLORS = [
   "#2563eb",
@@ -53,7 +54,37 @@ const Portfolio = () => {
     fetchPortfolio();
   }, []);
 
-  if (loading) return <Loader />;
+  if (loading) {
+    return (
+      <div className="p-6 max-w-5xl mx-auto space-y-8">
+        <h2 className="text-xl font-bold">Portfolio</h2>
+
+        <div className="bg-white rounded-xl shadow p-6 animate-pulse">
+          <div className="h-5 w-40 bg-gray-200 rounded mb-4"></div>
+          <div className="h-72 w-72 mx-auto rounded-full bg-gray-100"></div>
+        </div>
+
+        <div className="bg-white rounded-xl shadow overflow-x-auto">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="bg-gray-100 text-left text-sm text-gray-600">
+                <th className="p-3">Symbol</th>
+                <th className="p-3">Quantity</th>
+                <th className="p-3">Avg Buy</th>
+                <th className="p-3">Current Price</th>
+                <th className="p-3">P&L</th>
+              </tr>
+            </thead>
+            <tbody>
+              <TableRowSkeleton columns={5} />
+              <TableRowSkeleton columns={5} />
+              <TableRowSkeleton columns={5} />
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  }
 
   if (holdings.length === 0) {
     return (
@@ -135,20 +166,15 @@ const Portfolio = () => {
                   <td className="p-3">
                     {currentPrice != null ? `₹${currentPrice.toLocaleString()}` : "—"}
                   </td>
-                  <td
-                    className={`p-3 font-medium ${
-                      pnl == null
-                        ? "text-gray-400"
-                        : pnl >= 0
-                        ? "text-green-600"
-                        : "text-red-600"
-                    }`}
-                  >
-                    {pnl == null
-                      ? "—"
-                      : `${pnl >= 0 ? "+" : "-"}₹${Math.abs(pnl).toLocaleString(undefined, {
+                  <td className="p-3">
+                    <GainLossBadge
+                      value={pnl}
+                      formatValue={(v) =>
+                        `${v >= 0 ? "+" : "-"}₹${Math.abs(v).toLocaleString(undefined, {
                           maximumFractionDigits: 2,
-                        })}`}
+                        })}`
+                      }
+                    />
                   </td>
                 </tr>
               );

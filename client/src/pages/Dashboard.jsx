@@ -5,6 +5,8 @@ import { getMe } from "../services/userService";
 import { getPortfolio, getTrades } from "../services/portfolioService";
 import { getStockQuote } from "../services/stockService";
 import OutlineButton from "../components/ui/OutlineButton";
+import CardSkeleton from "../components/common/skeletons/CardSkeleton";
+import GainLossBadge from "../components/common/GainLossBadge";
 
 const Dashboard = () => {
   const { virtualBalance, setVirtualBalance } = useAuth();
@@ -14,6 +16,7 @@ const Dashboard = () => {
   const [totalPnL, setTotalPnL] = useState(0);
   const [recentActivity, setRecentActivity] = useState([]);
   const [isVisible, setIsVisible] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // ✅ Load visibility preference
   useEffect(() => {
@@ -75,6 +78,8 @@ const Dashboard = () => {
         setRecentActivity(tradesRes.data.slice(0, 5));
       } catch (err) {
         console.error("Failed to fetch dashboard data");
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -110,35 +115,51 @@ const Dashboard = () => {
       </div>
 
       {/* STATS */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {loading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <CardSkeleton />
+          <CardSkeleton />
+          <CardSkeleton />
+          <CardSkeleton />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
-        <StatCard
-          title="Wallet Balance"
-          value={
-            virtualBalance === null
-              ? "Loading..."
-              : maskValue(`₹${virtualBalance.toLocaleString()}`)
-          }
-          color="text-green-600"
-        />
+          <StatCard
+            title="Wallet Balance"
+            value={
+              virtualBalance === null
+                ? "Loading..."
+                : maskValue(`₹${virtualBalance.toLocaleString()}`)
+            }
+            color="text-green-600"
+          />
 
-        <StatCard
-          title="Invested Amount"
-          value={maskValue(`₹${investedAmount.toLocaleString()}`)}
-        />
+          <StatCard
+            title="Invested Amount"
+            value={maskValue(`₹${investedAmount.toLocaleString()}`)}
+          />
 
-        <StatCard
-          title="Total P&L"
-          value={maskValue(pnlLabel)}
-          color={totalPnL >= 0 ? "text-green-600" : "text-red-600"}
-        />
+          <StatCard
+            title="Total P&L"
+            badge={
+              isVisible ? (
+                <GainLossBadge value={totalPnL} formatValue={() => pnlLabel} />
+              ) : (
+                <span className="text-2xl font-bold mt-2 block text-gray-800">
+                  ₹ ••••••
+                </span>
+              )
+            }
+          />
 
-        <StatCard
-          title="Active Stocks"
-          value={holdingsData.length} // not masked (non-sensitive)
-        />
+          <StatCard
+            title="Active Stocks"
+            value={holdingsData.length} // not masked (non-sensitive)
+          />
 
-      </div>
+        </div>
+      )}
 
       {/* MAIN */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -148,7 +169,12 @@ const Dashboard = () => {
             Your Stocks
           </h3>
 
-          {holdingsData.length === 0 ? (
+          {loading ? (
+            <div className="space-y-3">
+              <CardSkeleton />
+              <CardSkeleton />
+            </div>
+          ) : holdingsData.length === 0 ? (
             <div className="border rounded-lg p-6 text-center text-gray-500 text-sm">
               No holdings yet. Buy your first stock to see it here.
             </div>
@@ -166,27 +192,20 @@ const Dashboard = () => {
                     </p>
                   </div>
 
-                  <div className="text-right">
+                  <div className="text-right space-y-1">
                     <p className="text-gray-800">
                       {holding.currentPrice != null
                         ? `₹${holding.currentPrice.toLocaleString()}`
                         : "—"}
                     </p>
-                    <p
-                      className={`text-xs ${
-                        holding.pnl == null
-                          ? "text-gray-400"
-                          : holding.pnl >= 0
-                          ? "text-green-600"
-                          : "text-red-600"
-                      }`}
-                    >
-                      {holding.pnl == null
-                        ? "—"
-                        : `${holding.pnl >= 0 ? "+" : "-"}₹${Math.abs(
-                            holding.pnl
-                          ).toLocaleString(undefined, { maximumFractionDigits: 2 })}`}
-                    </p>
+                    <GainLossBadge
+                      value={holding.pnl}
+                      formatValue={(v) =>
+                        `${v >= 0 ? "+" : "-"}₹${Math.abs(v).toLocaleString(undefined, {
+                          maximumFractionDigits: 2,
+                        })}`
+                      }
+                    />
                   </div>
                 </div>
               ))}
@@ -199,7 +218,12 @@ const Dashboard = () => {
             Recent Activity
           </h3>
 
-          {recentActivity.length === 0 ? (
+          {loading ? (
+            <div className="space-y-3">
+              <CardSkeleton />
+              <CardSkeleton />
+            </div>
+          ) : recentActivity.length === 0 ? (
             <p className="text-sm text-gray-500">No recent activity yet.</p>
           ) : (
             <ul className="space-y-3 text-sm text-gray-600">
@@ -219,13 +243,17 @@ const Dashboard = () => {
 };
 
 /* Reusable Stat Card */
-const StatCard = ({ title, value, color = "text-gray-800" }) => {
+const StatCard = ({ title, value, color = "text-gray-800", badge }) => {
   return (
     <div className="bg-white rounded-xl shadow p-5">
       <p className="text-sm text-gray-500">{title}</p>
-      <h2 className={`text-2xl font-bold mt-2 ${color}`}>
-        {value}
-      </h2>
+      {badge ? (
+        <div className="mt-2">{badge}</div>
+      ) : (
+        <h2 className={`text-2xl font-bold mt-2 ${color}`}>
+          {value}
+        </h2>
+      )}
     </div>
   );
 };

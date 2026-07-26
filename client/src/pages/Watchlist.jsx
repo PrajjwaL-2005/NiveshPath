@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import { getWatchlist, removeFromWatchlist } from "../services/watchlistService";
 import { getStockQuote } from "../services/stockService";
 import Loader from "../components/common/Loader";
+import GainLossBadge from "../components/common/GainLossBadge";
 
 const Watchlist = () => {
   const [items, setItems] = useState([]);
@@ -94,14 +95,12 @@ const Watchlist = () => {
                     {price != null ? `₹${price.toLocaleString()}` : "—"}
                   </p>
                   {changePercent != null && (
-                    <p
-                      className={`text-xs ${
-                        change >= 0 ? "text-green-600" : "text-red-600"
-                      }`}
-                    >
-                      {change >= 0 ? "+" : ""}
-                      {change.toFixed(2)} ({changePercent}%)
-                    </p>
+                    <GainLossBadge
+                      value={change}
+                      formatValue={(v) =>
+                        `${v >= 0 ? "+" : ""}${v.toFixed(2)} (${changePercent}%)`
+                      }
+                    />
                   )}
                 </div>
 
