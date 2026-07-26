@@ -14,6 +14,7 @@ import errorHandler from "./middleware/errorMiddleware.js";
 import userRoutes from "./routes/userRoutes.js";
 import newsRoutes from "./routes/newsRoutes.js";
 import aiRoutes from "./routes/aiRoutes.js";
+import watchlistRoutes from "./routes/watchlistRoutes.js";
 
 
 
@@ -41,6 +42,7 @@ app.use("/api/stocks", stockRoutes);
 app.use("/api/news", newsRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/ai", aiRoutes);
+app.use("/api/watchlist", watchlistRoutes);
 
 app.get("/", (req, res) => {
   res.send("🚀 StockPilot API running...");

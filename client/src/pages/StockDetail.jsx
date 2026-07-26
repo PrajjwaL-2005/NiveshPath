@@ -1,16 +1,25 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { Star } from "lucide-react";
 import { getStockDetails } from "../services/stockService";
 import { buyStock, sellStock } from "../services/tradeService";
+import {
+  getWatchlist,
+  addToWatchlist,
+  removeFromWatchlist,
+} from "../services/watchlistService";
+import { useAuth } from "../hooks/useAuth";
 import Loader from "../components/common/Loader";
 import PriceChart from "../components/stocks/PriceChart";
 import StockChat from "../components/ai/StockChat";
 
 const StockDetail = () => {
   const { symbol } = useParams();
+  const { user } = useAuth();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isWatchlisted, setIsWatchlisted] = useState(false);
 
   // 🔹 Trade state
   const [quantity, setQuantity] = useState(1);
@@ -30,7 +39,37 @@ const StockDetail = () => {
     };
 
     fetchDetails();
-  }, [symbol]);
+
+    if (user) {
+      const fetchWatchlistStatus = async () => {
+        try {
+          const res = await getWatchlist();
+          const upperSymbol = symbol.toUpperCase();
+          setIsWatchlisted(res.data.some((item) => item.symbol === upperSymbol));
+        } catch (err) {
+          // ignore — leave unwatchlisted
+        }
+      };
+
+      fetchWatchlistStatus();
+    }
+  }, [symbol, user]);
+
+  const toggleWatchlist = async () => {
+    try {
+      if (isWatchlisted) {
+        await removeFromWatchlist(symbol);
+        setIsWatchlisted(false);
+        toast.success(`Removed ${symbol} from watchlist`);
+      } else {
+        await addToWatchlist(symbol);
+        setIsWatchlisted(true);
+        toast.success(`Added ${symbol} to watchlist`);
+      }
+    } catch (err) {
+      toast.error("Failed to update watchlist");
+    }
+  };
 
   const handleBuy = async () => {
     try {
@@ -68,9 +107,25 @@ const StockDetail = () => {
       {/* LEFT SECTION */}
       <div className="lg:col-span-2">
         {/* Header */}
-        <h1 className="text-2xl font-bold">
-          {profile?.name ?? symbol} ({profile?.ticker ?? symbol})
-        </h1>
+        <div className="flex items-center gap-3">
+          <h1 className="text-2xl font-bold">
+            {profile?.name ?? symbol} ({profile?.ticker ?? symbol})
+          </h1>
+
+          {user && (
+            <button
+              onClick={toggleWatchlist}
+              className="text-gray-400 hover:text-yellow-500 transition"
+              aria-label="Toggle watchlist"
+            >
+              <Star
+                size={22}
+                fill={isWatchlisted ? "#eab308" : "none"}
+                className={isWatchlisted ? "text-yellow-500" : ""}
+              />
+            </button>
+          )}
+        </div>
         <p className="text-gray-500">{profile?.exchange ?? "—"}</p>
 
         {/* Price */}

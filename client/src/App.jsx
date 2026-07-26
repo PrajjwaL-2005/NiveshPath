@@ -7,6 +7,7 @@ import Trading from "./pages/Trading";
 import Portfolio from "./pages/Portfolio";
 import News from "./pages/News";
 import StockDetail from "./pages/StockDetail";
+import Watchlist from "./pages/Watchlist";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 
 
@@ -37,6 +38,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Portfolio />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/watchlist"
+            element={
+              <ProtectedRoute>
+                <Watchlist />
               </ProtectedRoute>
             }
           />
