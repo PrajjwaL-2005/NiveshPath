@@ -21,12 +21,16 @@ import aiRoutes from "./routes/aiRoutes.js";
 
 
 connectDB();
-console.log("FINNHUB KEY:", process.env.FINNHUB_API_KEY);
 
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 // Routes

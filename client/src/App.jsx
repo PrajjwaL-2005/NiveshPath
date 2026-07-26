@@ -7,6 +7,7 @@ import Trading from "./pages/Trading";
 import Portfolio from "./pages/Portfolio";
 import News from "./pages/News";
 import StockDetail from "./pages/StockDetail";
+import ProtectedRoute from "./components/common/ProtectedRoute";
 
 
 // inside <Routes>
@@ -23,8 +24,22 @@ function App() {
         <Routes>
           
           <Route path="/" element={<Dashboard />} />
-          <Route path="/trade" element={<Trading />} />
-          <Route path="/portfolio" element={<Portfolio />} />
+          <Route
+            path="/trade"
+            element={
+              <ProtectedRoute>
+                <Trading />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/portfolio"
+            element={
+              <ProtectedRoute>
+                <Portfolio />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/news" element={<News />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
