@@ -7,13 +7,15 @@ export const AuthProvider = ({ children }) => {
 
   const [user, setUser] = useState(storedUser);
   const [virtualBalance, setVirtualBalance] = useState(
-    storedUser?.virtualBalance ?? null
+    storedUser?.user?.virtualBalance ?? null
   );
 
   const login = (data) => {
-    localStorage.setItem("user", JSON.stringify(data));
-    setUser(data);
-    setVirtualBalance(data.virtualBalance); // ✅ sync balance on login
+    const { password, ...safeUser } = data.user ?? {};
+    const sanitized = { ...data, user: safeUser };
+    localStorage.setItem("user", JSON.stringify(sanitized));
+    setUser(sanitized);
+    setVirtualBalance(safeUser.virtualBalance ?? data.virtualBalance);
   };
 
   const logout = () => {

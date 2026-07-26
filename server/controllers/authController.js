@@ -2,6 +2,13 @@ import bcrypt from "bcryptjs";
 import User from "../models/User.js";
 import { generateToken } from "../utils/jwt.js";
 
+const toSafeUser = (user) => ({
+  _id: user._id,
+  name: user.name,
+  email: user.email,
+  virtualBalance: user.virtualBalance,
+});
+
 export const signup = async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -13,7 +20,7 @@ export const signup = async (req, res) => {
 
   res.json({
     token: generateToken(user),
-    user
+    user: toSafeUser(user)
   });
 };
 
@@ -28,6 +35,6 @@ export const login = async (req, res) => {
 
   res.json({
     token: generateToken(user),
-    user
+    user: toSafeUser(user)
   });
 };
