@@ -47,11 +47,12 @@ const PriceChart = ({ symbol }) => {
             {
               label: "Price",
               data: prices,
-              borderColor: "#2563eb",
-              backgroundColor: "rgba(37, 99, 235, 0.1)",
+              borderColor: "#4f46e5",
+              backgroundColor: "rgba(79, 70, 229, 0.08)",
               fill: true,
               tension: 0.4,
               pointRadius: 0,
+              borderWidth: 2,
             },
           ],
         });
@@ -67,20 +68,20 @@ const PriceChart = ({ symbol }) => {
   }, [symbol, range]);
 
   return (
-    <div className="bg-white rounded-xl shadow p-6 mt-8">
+    <div className="bg-white rounded-2xl shadow-soft p-6 mt-8">
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-semibold">Price Chart</h3>
+        <h3 className="text-lg font-semibold text-slate-800">Price Chart</h3>
 
-        <div className="flex gap-2">
+        <div className="flex gap-1.5 bg-slate-100 rounded-lg p-1">
           {ranges.map((r) => (
             <button
               key={r}
               onClick={() => setRange(r)}
-              className={`px-3 py-1 text-sm rounded ${
+              className={`px-3 py-1 text-xs font-semibold rounded-md transition-all duration-200 ${
                 range === r
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-200 text-gray-700"
+                  ? "bg-white text-brand-700 shadow-sm"
+                  : "text-slate-500 hover:text-slate-700"
               }`}
             >
               {r}
@@ -90,41 +91,44 @@ const PriceChart = ({ symbol }) => {
       </div>
 
       {/* Chart */}
-      {/* Chart */}
-{loading ? (
-  <Loader />
-) : !chartData ? (
-  <p className="text-center text-gray-500">
-    No chart data available
-  </p>
-) : (
-  <div className="h-64 w-full"> {/* 👈 FIXED HEIGHT */}
-    <Line
-      data={chartData}
-      options={{
-        responsive: true,
-        maintainAspectRatio: false, // 👈 IMPORTANT
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            callbacks: {
-              label: (ctx) => `₹ ${ctx.parsed.y}`,
-            },
-          },
-        },
-        scales: {
-          x: { display: false },
-          y: {
-            ticks: {
-              callback: (value) => `₹ ${value}`,
-            },
-          },
-        },
-      }}
-    />
-  </div>
-)}
-
+      {loading ? (
+        <Loader />
+      ) : !chartData ? (
+        <p className="text-center text-slate-500">
+          No chart data available
+        </p>
+      ) : (
+        <div className="h-64 w-full">
+          <Line
+            data={chartData}
+            options={{
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { display: false },
+                tooltip: {
+                  backgroundColor: "#1e293b",
+                  padding: 10,
+                  cornerRadius: 8,
+                  callbacks: {
+                    label: (ctx) => `₹ ${ctx.parsed.y}`,
+                  },
+                },
+              },
+              scales: {
+                x: { display: false },
+                y: {
+                  grid: { color: "#f1f5f9" },
+                  ticks: {
+                    color: "#64748b",
+                    callback: (value) => `₹ ${value}`,
+                  },
+                },
+              },
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 };

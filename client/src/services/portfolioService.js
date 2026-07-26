@@ -4,6 +4,6 @@ export const getPortfolio = () => {
   return api.get("/portfolio");
 };
 
-export const getTrades = () => {
-  return api.get("/portfolio/trades");
+export const getTrades = ({ page = 1, limit = 20 } = {}) => {
+  return api.get("/portfolio/trades", { params: { page, limit } });
 };

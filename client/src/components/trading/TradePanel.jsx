@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { ShoppingCart, Wallet2 } from "lucide-react";
 import { buyStock, sellStock } from "../../services/tradeService";
 import { getPortfolio } from "../../services/portfolioService";
 import { useAuth } from "../../hooks/useAuth";
@@ -32,7 +33,7 @@ const TradePanel = ({ symbol, price }) => {
   }, [symbol]);
 
   if (!symbol) {
-    return <p className="text-gray-500">Select a stock to trade</p>;
+    return <p className="text-slate-500">Select a stock to trade</p>;
   }
 
   const maxBuyQty = price > 0 ? Math.floor((virtualBalance ?? 0) / price) : 0;
@@ -75,32 +76,43 @@ const TradePanel = ({ symbol, price }) => {
   };
 
   return (
-    <div className="space-y-4">
-      <p className="text-lg font-semibold">
-        {symbol} @ ₹{price}
+    <div className="space-y-5 bg-white rounded-2xl shadow-soft p-5">
+      <div className="flex items-center justify-between">
+        <p className="text-lg font-bold text-slate-800">
+          {symbol} <span className="text-slate-400 font-medium">@</span> ₹{price}
+        </p>
+        <span className="flex items-center gap-1.5 text-xs font-medium text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full">
+          <Wallet2 size={12} />
+          ₹{(virtualBalance ?? 0).toLocaleString()}
+        </span>
+      </div>
+
+      <div>
+        <label className="text-xs font-medium text-slate-500 mb-1 block">Quantity</label>
+        <input
+          type="number"
+          min="1"
+          className="border border-slate-200 p-2.5 w-full rounded-xl text-sm outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-100"
+          value={quantity}
+          onChange={(e) => setQuantity(+e.target.value)}
+        />
+      </div>
+
+      <p className="text-sm text-slate-500">
+        Est. Total:{" "}
+        <span className="font-semibold text-slate-800">
+          ₹{estimatedTotal.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+        </span>
       </p>
 
-      <input
-        type="number"
-        min="1"
-        className="border p-2 w-32"
-        value={quantity}
-        onChange={(e) => setQuantity(+e.target.value)}
-      />
-
-      <p className="text-sm text-gray-600">
-        Est. Total: ₹
-        {estimatedTotal.toLocaleString(undefined, { maximumFractionDigits: 2 })}
-      </p>
-
-      <div className="space-y-1">
-        <p className="text-xs text-gray-500 font-medium">Quick Buy</p>
+      <div className="space-y-1.5">
+        <p className="text-xs text-slate-500 font-medium">Quick Buy</p>
         <div className="flex gap-2">
           {QUICK_PERCENTS.map((pct) => (
             <button
               key={`buy-${pct}`}
               onClick={() => setBuyPercent(pct)}
-              className="px-2 py-1 text-xs border rounded hover:bg-gray-100 transition"
+              className="flex-1 px-2 py-1.5 text-xs font-semibold border border-slate-200 rounded-lg text-slate-600 hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700 transition-colors"
             >
               {pct === 1 ? "Max" : `${pct * 100}%`}
             </button>
@@ -108,15 +120,15 @@ const TradePanel = ({ symbol, price }) => {
         </div>
       </div>
 
-      <div className="space-y-1">
-        <p className="text-xs text-gray-500 font-medium">Quick Sell</p>
+      <div className="space-y-1.5">
+        <p className="text-xs text-slate-500 font-medium">Quick Sell</p>
         <div className="flex gap-2">
           {QUICK_PERCENTS.map((pct) => (
             <button
               key={`sell-${pct}`}
               onClick={() => setSellPercent(pct)}
               disabled={holdingQty === 0}
-              className="px-2 py-1 text-xs border rounded hover:bg-gray-100 transition disabled:opacity-40 disabled:cursor-not-allowed"
+              className="flex-1 px-2 py-1.5 text-xs font-semibold border border-slate-200 rounded-lg text-slate-600 hover:border-rose-300 hover:bg-rose-50 hover:text-rose-700 transition-colors disabled:opacity-40 disabled:pointer-events-none"
             >
               {pct === 1 ? "Max" : `${pct * 100}%`}
             </button>
@@ -124,21 +136,26 @@ const TradePanel = ({ symbol, price }) => {
         </div>
       </div>
 
-      {error && <p className="text-red-600 text-sm">{error}</p>}
+      {error && (
+        <p className="text-rose-600 text-sm bg-rose-50 border border-rose-100 rounded-lg py-2 px-3">
+          {error}
+        </p>
+      )}
 
-      <div className="flex gap-3">
+      <div className="flex gap-3 pt-1">
         <button
           onClick={handleBuy}
           disabled={tradeLoading}
-          className="bg-green-600 text-white px-4 py-2 rounded disabled:opacity-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold py-2.5 rounded-xl shadow-soft transition-all duration-200 hover:shadow-lg hover:shadow-emerald-500/30 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:pointer-events-none"
         >
+          <ShoppingCart size={15} />
           {tradeLoading ? "Processing..." : "Buy"}
         </button>
 
         <button
           onClick={handleSell}
           disabled={tradeLoading}
-          className="bg-red-600 text-white px-4 py-2 rounded disabled:opacity-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          className="flex-1 bg-gradient-to-r from-rose-500 to-rose-600 text-white font-semibold py-2.5 rounded-xl shadow-soft transition-all duration-200 hover:shadow-lg hover:shadow-rose-500/30 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:pointer-events-none"
         >
           {tradeLoading ? "Processing..." : "Sell"}
         </button>

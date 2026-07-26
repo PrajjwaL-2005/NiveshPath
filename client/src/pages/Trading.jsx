@@ -33,8 +33,11 @@ const Trading = () => {
   }, [symbol]);
 
   return (
-    <div className="p-6 space-y-6">
-      <h2 className="text-xl font-bold">Trading</h2>
+    <div className="max-w-3xl mx-auto p-6 space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold text-slate-800">Trading</h2>
+        <p className="text-slate-500 text-sm mt-1">Search a stock and place a trade</p>
+      </div>
 
       {/* 🔍 Search Bar */}
       <StockSearch />
@@ -51,10 +54,10 @@ const Trading = () => {
       )}
 
       {/* ℹ️ Empty state */}
-      {!symbol && (
-        <p className="text-gray-500">
+      {!symbol && !loading && (
+        <div className="border border-dashed border-slate-200 rounded-xl p-8 text-center text-slate-500 bg-white">
           Search and select a stock to start trading
-        </p>
+        </div>
       )}
     </div>
   );

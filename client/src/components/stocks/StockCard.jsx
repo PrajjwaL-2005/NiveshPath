@@ -58,29 +58,29 @@ const StockCard = ({ stock }) => {
   return (
     <div
       onClick={() => navigate(`/stocks/${stock.symbol}`)}
-      className="flex justify-between items-center border rounded-lg px-4 py-3 cursor-pointer hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+      className="flex justify-between items-center bg-white border border-slate-200 rounded-xl px-4 py-3 cursor-pointer transition-all duration-200 hover:border-brand-200 hover:-translate-y-0.5 hover:shadow-card"
     >
       {/* LEFT */}
       <div className="flex items-center gap-3">
         {user && (
           <button
             onClick={toggleWatchlist}
-            className="text-gray-400 hover:text-yellow-500 transition"
+            className="text-slate-300 hover:text-amber-500 transition-colors"
             aria-label="Toggle watchlist"
           >
             <Star
               size={18}
-              fill={isWatchlisted ? "#eab308" : "none"}
-              className={isWatchlisted ? "text-yellow-500" : ""}
+              fill={isWatchlisted ? "#f59e0b" : "none"}
+              className={isWatchlisted ? "text-amber-500" : ""}
             />
           </button>
         )}
 
         <div>
-          <h4 className="font-semibold text-gray-800">
+          <h4 className="font-semibold text-slate-800">
             {stock.symbol}
           </h4>
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-slate-500">
             {stock.name || "—"}
           </p>
         </div>
@@ -88,12 +88,12 @@ const StockCard = ({ stock }) => {
 
       {/* RIGHT */}
       <div className="text-right">
-        <p className="font-semibold text-gray-800">
+        <p className="font-semibold text-slate-800">
           ₹{price}
         </p>
         <p
-          className={`text-xs ${
-            isPositive ? "text-green-600" : "text-red-600"
+          className={`text-xs font-medium ${
+            isPositive ? "text-emerald-600" : "text-rose-600"
           }`}
         >
           {isPositive ? "+" : ""}

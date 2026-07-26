@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Search, Loader2 } from "lucide-react";
 import { searchStocks } from "../../services/stockService";
 
 const RECENT_SEARCHES_KEY = "recentStockSearches";
@@ -100,31 +101,31 @@ const StockSearch = ({ onSelect }) => {
 
   return (
     <div className="relative max-w-md">
-      <input
-        className="border p-2 w-full rounded"
-        placeholder="Search stock (INFY, Reliance...)"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        onKeyDown={handleKeyDown}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setTimeout(() => setIsFocused(false), 150)}
-      />
-
-      {loading && (
-        <div className="absolute bg-white p-2 text-sm">
-          Searching...
-        </div>
-      )}
+      <div className="relative">
+        <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+        <input
+          className="border border-slate-200 bg-white pl-10 pr-9 py-2.5 w-full rounded-xl text-sm outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-100"
+          placeholder="Search stock (INFY, Reliance...)"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={handleKeyDown}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setTimeout(() => setIsFocused(false), 150)}
+        />
+        {loading && (
+          <Loader2 size={16} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-brand-500 animate-spin" />
+        )}
+      </div>
 
       {showRecent && (
-        <div className="absolute z-10 bg-white border w-full rounded shadow mt-1 p-3">
-          <p className="text-xs text-gray-400 mb-2">Recent Searches</p>
+        <div className="absolute z-10 bg-white border border-slate-200 w-full rounded-xl shadow-card mt-2 p-3 animate-fade-in">
+          <p className="text-xs text-slate-400 mb-2">Recent Searches</p>
           <div className="flex flex-wrap gap-2">
             {recentSearches.map((symbol) => (
               <button
                 key={symbol}
                 onMouseDown={() => goToSymbol(symbol)}
-                className="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded-full transition"
+                className="px-3 py-1 text-xs font-medium bg-slate-100 hover:bg-brand-50 hover:text-brand-700 rounded-full transition-colors"
               >
                 {symbol}
               </button>
@@ -134,20 +135,20 @@ const StockSearch = ({ onSelect }) => {
       )}
 
       {results.length > 0 && (
-        <ul className="absolute z-10 bg-white border w-full rounded shadow mt-1 max-h-64 overflow-y-auto">
+        <ul className="absolute z-10 bg-white border border-slate-200 w-full rounded-xl shadow-card mt-2 max-h-64 overflow-y-auto animate-fade-in">
           {results.map((stock, idx) => (
             <li
               key={stock.symbol ?? idx}
-              className={`p-2 cursor-pointer ${
-                idx === activeIndex ? "bg-gray-100" : "hover:bg-gray-100"
+              className={`p-3 cursor-pointer first:rounded-t-xl last:rounded-b-xl transition-colors ${
+                idx === activeIndex ? "bg-brand-50" : "hover:bg-slate-50"
               }`}
               onClick={() => handleSelect(stock)}
               onMouseEnter={() => setActiveIndex(idx)}
             >
-              <div className="font-medium">
+              <div className="font-medium text-slate-800">
                 {stock.symbol ?? "N/A"}
               </div>
-              <div className="text-xs text-gray-500">
+              <div className="text-xs text-slate-500">
                 {stock.description ?? stock.name ?? ""}
               </div>
             </li>

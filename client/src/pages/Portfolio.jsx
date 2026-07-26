@@ -13,14 +13,14 @@ import TableRowSkeleton from "../components/common/skeletons/TableRowSkeleton";
 import GainLossBadge from "../components/common/GainLossBadge";
 
 const COLORS = [
-  "#2563eb",
-  "#16a34a",
-  "#dc2626",
-  "#d97706",
+  "#4f46e5",
+  "#10b981",
+  "#f43f5e",
+  "#f59e0b",
   "#7c3aed",
-  "#0891b2",
-  "#db2777",
-  "#65a30d",
+  "#06b6d4",
+  "#ec4899",
+  "#84cc16",
 ];
 
 const Portfolio = () => {
@@ -57,17 +57,17 @@ const Portfolio = () => {
   if (loading) {
     return (
       <div className="p-6 max-w-5xl mx-auto space-y-8">
-        <h2 className="text-xl font-bold">Portfolio</h2>
+        <h2 className="text-2xl font-bold text-slate-800">Portfolio</h2>
 
-        <div className="bg-white rounded-xl shadow p-6 animate-pulse">
-          <div className="h-5 w-40 bg-gray-200 rounded mb-4"></div>
-          <div className="h-72 w-72 mx-auto rounded-full bg-gray-100"></div>
+        <div className="bg-white rounded-2xl shadow-soft p-6 animate-pulse">
+          <div className="h-5 w-40 bg-slate-200 rounded mb-4"></div>
+          <div className="h-72 w-72 mx-auto rounded-full bg-slate-100"></div>
         </div>
 
-        <div className="bg-white rounded-xl shadow overflow-x-auto">
+        <div className="bg-white rounded-2xl shadow-soft overflow-x-auto">
           <table className="w-full border-collapse">
             <thead>
-              <tr className="bg-gray-100 text-left text-sm text-gray-600">
+              <tr className="bg-slate-50 text-left text-sm text-slate-600">
                 <th className="p-3">Symbol</th>
                 <th className="p-3">Quantity</th>
                 <th className="p-3">Avg Buy</th>
@@ -89,12 +89,12 @@ const Portfolio = () => {
   if (holdings.length === 0) {
     return (
       <div className="p-6 max-w-3xl mx-auto">
-        <h2 className="text-xl font-bold mb-6">Portfolio</h2>
-        <div className="bg-white border rounded-xl shadow p-10 text-center">
-          <p className="text-gray-600 font-medium mb-1">
+        <h2 className="text-2xl font-bold text-slate-800 mb-6">Portfolio</h2>
+        <div className="bg-white border border-dashed border-slate-200 rounded-2xl shadow-soft p-10 text-center">
+          <p className="text-slate-600 font-medium mb-1">
             You don't own any stocks yet.
           </p>
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-slate-400">
             Head over to Trade to buy your first stock.
           </p>
         </div>
@@ -111,11 +111,11 @@ const Portfolio = () => {
   });
 
   return (
-    <div className="p-6 max-w-5xl mx-auto space-y-8">
-      <h2 className="text-xl font-bold">Portfolio</h2>
+    <div className="p-6 max-w-5xl mx-auto space-y-8 animate-fade-in">
+      <h2 className="text-2xl font-bold text-slate-800">Portfolio</h2>
 
-      <div className="bg-white rounded-xl shadow p-6">
-        <h3 className="text-lg font-semibold mb-4">Asset Allocation</h3>
+      <div className="bg-white rounded-2xl shadow-soft p-6">
+        <h3 className="text-lg font-semibold text-slate-800 mb-4">Asset Allocation</h3>
         <div className="h-72 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
@@ -138,10 +138,10 @@ const Portfolio = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow overflow-x-auto">
+      <div className="bg-white rounded-2xl shadow-soft overflow-x-auto">
         <table className="w-full border-collapse">
           <thead>
-            <tr className="bg-gray-100 text-left text-sm text-gray-600">
+            <tr className="bg-slate-50 text-left text-sm text-slate-600">
               <th className="p-3">Symbol</th>
               <th className="p-3">Quantity</th>
               <th className="p-3">Avg Buy</th>
@@ -159,11 +159,11 @@ const Portfolio = () => {
                   : null;
 
               return (
-                <tr key={holding._id} className="border-t text-sm">
-                  <td className="p-3 font-medium">{holding.symbol}</td>
-                  <td className="p-3">{holding.quantity}</td>
-                  <td className="p-3">₹{holding.avgBuyPrice.toLocaleString()}</td>
-                  <td className="p-3">
+                <tr key={holding._id} className="border-t border-slate-100 text-sm hover:bg-slate-50 transition-colors">
+                  <td className="p-3 font-semibold text-slate-800">{holding.symbol}</td>
+                  <td className="p-3 text-slate-600">{holding.quantity}</td>
+                  <td className="p-3 text-slate-600">₹{holding.avgBuyPrice.toLocaleString()}</td>
+                  <td className="p-3 text-slate-600">
                     {currentPrice != null ? `₹${currentPrice.toLocaleString()}` : "—"}
                   </td>
                   <td className="p-3">

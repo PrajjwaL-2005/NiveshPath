@@ -2,6 +2,7 @@ import { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import api from "../services/api";
 import { useNavigate, Link } from "react-router-dom";
+import { User, Mail, Lock, TrendingUp, Loader2 } from "lucide-react";
 
 const Signup = () => {
   const [name, setName] = useState("");
@@ -28,47 +29,71 @@ const Signup = () => {
   };
 
   return (
-    <div className="h-screen flex justify-center items-center bg-gray-100">
+    <div className="min-h-[calc(100vh-64px)] flex justify-center items-center bg-gradient-to-br from-brand-50 via-slate-50 to-violet-50 px-4 py-10">
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-6 rounded w-96 space-y-4"
+        className="bg-white p-8 rounded-2xl shadow-card w-full max-w-sm space-y-5 animate-fade-in"
       >
-        <h2 className="text-xl font-bold text-center">Signup</h2>
+        <div className="flex flex-col items-center gap-2 mb-1">
+          <span className="flex items-center justify-center h-12 w-12 rounded-2xl bg-gradient-to-br from-brand-600 to-violet-600 text-white shadow-brand">
+            <TrendingUp size={22} />
+          </span>
+          <h2 className="text-xl font-bold text-slate-800">Create your account</h2>
+          <p className="text-sm text-slate-400">Start practicing with virtual funds</p>
+        </div>
 
-        {error && <p className="text-red-600 text-sm text-center">{error}</p>}
+        {error && (
+          <p className="text-rose-600 text-sm text-center bg-rose-50 border border-rose-100 rounded-lg py-2 px-3">
+            {error}
+          </p>
+        )}
 
-        <input
-          placeholder="Name"
-          className="w-full border p-2"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
+        <div className="relative">
+          <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input
+            placeholder="Name"
+            className="w-full border border-slate-200 rounded-xl pl-10 pr-3 py-2.5 text-sm outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-100"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </div>
 
-        <input
-          placeholder="Email"
-          className="w-full border p-2"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+        <div className="relative">
+          <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input
+            placeholder="Email"
+            type="email"
+            className="w-full border border-slate-200 rounded-xl pl-10 pr-3 py-2.5 text-sm outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-100"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
 
-        <input
-          placeholder="Password"
-          type="password"
-          className="w-full border p-2"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <div className="relative">
+          <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input
+            placeholder="Password"
+            type="password"
+            className="w-full border border-slate-200 rounded-xl pl-10 pr-3 py-2.5 text-sm outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-100"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-green-600 text-white p-2 rounded disabled:opacity-50"
+          className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold p-2.5 rounded-xl shadow-soft transition-all duration-200 hover:shadow-lg hover:shadow-emerald-500/30 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:pointer-events-none"
         >
+          {loading && <Loader2 size={16} className="animate-spin" />}
           {loading ? "Creating account..." : "Create Account"}
         </button>
 
-        <p className="text-sm text-center">
-          Already have account? <Link to="/login" className="text-blue-600">Login</Link>
+        <p className="text-sm text-center text-slate-500">
+          Already have account?{" "}
+          <Link to="/login" className="text-brand-600 font-medium hover:text-brand-700">
+            Login
+          </Link>
         </p>
       </form>
     </div>

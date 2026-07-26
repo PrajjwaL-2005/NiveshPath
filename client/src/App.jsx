@@ -21,7 +21,7 @@ function App() {
       <Navbar />
 
       {/* MAIN PAGE CONTAINER */}
-      <div className="min-h-screen bg-gray-100">
+      <div className="min-h-screen bg-slate-50">
         <Routes>
           
           <Route path="/" element={<Dashboard />} />

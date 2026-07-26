@@ -53,13 +53,13 @@ const Watchlist = () => {
   if (items.length === 0) {
     return (
       <div className="p-6 max-w-3xl mx-auto">
-        <h2 className="text-xl font-bold mb-6">Watchlist</h2>
-        <div className="bg-white border rounded-xl shadow p-10 text-center">
-          <Star className="mx-auto mb-3 text-gray-300" size={32} />
-          <p className="text-gray-600 font-medium mb-1">
+        <h2 className="text-2xl font-bold text-slate-800 mb-6">Watchlist</h2>
+        <div className="bg-white border border-dashed border-slate-200 rounded-2xl shadow-soft p-10 text-center">
+          <Star className="mx-auto mb-3 text-slate-300" size={32} />
+          <p className="text-slate-600 font-medium mb-1">
             Your watchlist is empty.
           </p>
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-slate-400">
             Star a stock from its detail page to track it here.
           </p>
         </div>
@@ -68,10 +68,10 @@ const Watchlist = () => {
   }
 
   return (
-    <div className="p-6 max-w-4xl mx-auto space-y-4">
-      <h2 className="text-xl font-bold">Watchlist</h2>
+    <div className="p-6 max-w-4xl mx-auto space-y-4 animate-fade-in">
+      <h2 className="text-2xl font-bold text-slate-800">Watchlist</h2>
 
-      <div className="bg-white rounded-xl shadow divide-y">
+      <div className="bg-white rounded-2xl shadow-soft divide-y divide-slate-100">
         {items.map((item) => {
           const quote = quotes[item.symbol];
           const price = quote?.c;
@@ -81,17 +81,17 @@ const Watchlist = () => {
             change != null && quote?.pc ? ((change / quote.pc) * 100).toFixed(2) : null;
 
           return (
-            <div key={item._id} className="flex justify-between items-center p-4">
+            <div key={item._id} className="flex justify-between items-center p-4 hover:bg-slate-50 transition-colors">
               <Link
                 to={`/stocks/${item.symbol}`}
-                className="font-medium text-gray-800 hover:text-blue-600"
+                className="font-semibold text-slate-800 hover:text-brand-700 transition-colors"
               >
                 {item.symbol}
               </Link>
 
               <div className="flex items-center gap-6">
                 <div className="text-right">
-                  <p className="text-gray-800">
+                  <p className="text-slate-800 font-medium">
                     {price != null ? `₹${price.toLocaleString()}` : "—"}
                   </p>
                   {changePercent != null && (
@@ -106,7 +106,7 @@ const Watchlist = () => {
 
                 <button
                   onClick={() => handleRemove(item.symbol)}
-                  className="text-sm text-gray-400 hover:text-red-600 transition"
+                  className="text-sm text-slate-400 hover:text-rose-600 transition-colors"
                 >
                   Remove
                 </button>
