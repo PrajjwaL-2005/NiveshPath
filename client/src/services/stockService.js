@@ -1,7 +1,7 @@
 import api from "./api";
 
 export const searchStocks = (query) =>
-  api.get(`/stocks/search?q=${query}`);
+  api.get(`/stocks/search?q=${encodeURIComponent(query)}`);
 
 
 export const getStockQuote = async (symbol) => {

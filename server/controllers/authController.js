@@ -3,12 +3,10 @@ import User from "../models/User.js";
 import { generateToken } from "../utils/jwt.js";
 import { toRupees } from "../utils/money.js";
 
-const toSafeUser = (user) => ({
-  _id: user._id,
-  name: user.name,
-  email: user.email,
-  virtualBalance: toRupees(user.virtualBalanceInPaise),
-});
+const serializeUser = (user) => {
+  const { password, virtualBalanceInPaise, ...safeUser } = user.toObject();
+  return { ...safeUser, virtualBalance: toRupees(virtualBalanceInPaise) };
+};
 
 export const signup = async (req, res) => {
   const { name, email, password } = req.body;
@@ -21,14 +19,14 @@ export const signup = async (req, res) => {
 
   res.json({
     token: generateToken(user),
-    user: toSafeUser(user)
+    user: serializeUser(user)
   });
 };
 
 export const login = async (req, res) => {
   const { email, password } = req.body;
 
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email }).select("+password");
   if (!user) return res.status(401).json({ message: "Invalid credentials" });
 
   const match = await bcrypt.compare(password, user.password);
@@ -36,6 +34,6 @@ export const login = async (req, res) => {
 
   res.json({
     token: generateToken(user),
-    user: toSafeUser(user)
+    user: serializeUser(user)
   });
 };

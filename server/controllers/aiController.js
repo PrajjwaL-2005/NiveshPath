@@ -46,7 +46,7 @@ export const chatWithStockAI = async (req, res) => {
     }
 
     // Personalization — ground the answer in the user's own position, if any.
-    const userId = req.user.id || req.user._id || req.user.userId;
+    const userId = req.user.id;
     const holding = await Portfolio.findOne({ userId, symbol }).lean();
     const positionContext = holding
       ? `The user already holds ${holding.quantity} share(s) of ${symbol} at an average buy price of ₹${toRupees(holding.avgBuyPriceInPaise)}.`

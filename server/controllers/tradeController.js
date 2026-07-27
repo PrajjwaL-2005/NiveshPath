@@ -12,7 +12,7 @@ export const buyStock = async (req, res) => {
   const { symbol, quantity } = req.body;
 
   // 🔑 userId from decoded JWT (middleware sets req.user = decoded)
-  const userId = req.user.id || req.user._id || req.user.userId;
+  const userId = req.user.id;
   if (!userId) {
     return res.status(401).json({ message: "Unauthorized" });
   }
@@ -110,7 +110,7 @@ export const buyStock = async (req, res) => {
 export const sellStock = async (req, res) => {
   const { symbol, quantity } = req.body;
 
-  const userId = req.user.id || req.user._id || req.user.userId;
+  const userId = req.user.id;
   if (!userId) {
     return res.status(401).json({ message: "Unauthorized" });
   }

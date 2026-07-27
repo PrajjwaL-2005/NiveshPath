@@ -5,7 +5,7 @@ import { toRupees } from "../utils/money.js";
 
 export const getPortfolio = async (req, res) => {
   try {
-    const userId = req.user.id || req.user._id || req.user.userId;
+    const userId = req.user.id;
 
     const holdings = await Portfolio.find({ userId }).lean();
 

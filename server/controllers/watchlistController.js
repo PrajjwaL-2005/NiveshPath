@@ -2,7 +2,7 @@ import Watchlist from "../models/Watchlist.js";
 
 export const getWatchlist = async (req, res) => {
   try {
-    const userId = req.user.id || req.user._id || req.user.userId;
+    const userId = req.user.id;
     const items = await Watchlist.find({ userId }).sort({ createdAt: -1 });
     res.json(items);
   } catch (error) {
@@ -13,7 +13,7 @@ export const getWatchlist = async (req, res) => {
 
 export const addToWatchlist = async (req, res) => {
   try {
-    const userId = req.user.id || req.user._id || req.user.userId;
+    const userId = req.user.id;
     const { symbol } = req.body;
 
     const item = await Watchlist.findOneAndUpdate(
@@ -31,7 +31,7 @@ export const addToWatchlist = async (req, res) => {
 
 export const removeFromWatchlist = async (req, res) => {
   try {
-    const userId = req.user.id || req.user._id || req.user.userId;
+    const userId = req.user.id;
     const { symbol } = req.params;
 
     await Watchlist.findOneAndDelete({ userId, symbol });
