@@ -7,4 +7,6 @@ const portfolioSchema = new mongoose.Schema({
   avgBuyPrice: Number
 });
 
+portfolioSchema.index({ userId: 1, symbol: 1 }, { unique: true });
+
 export default mongoose.model("Portfolio", portfolioSchema);
