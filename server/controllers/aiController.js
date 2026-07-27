@@ -1,5 +1,6 @@
 import axios from "axios";
 import Portfolio from "../models/Portfolio.js";
+import { toRupees } from "../utils/money.js";
 
 const MAX_QUESTION_LENGTH = 500;
 const MAX_STOCKDATA_LENGTH = 6000;
@@ -48,7 +49,7 @@ export const chatWithStockAI = async (req, res) => {
     const userId = req.user.id || req.user._id || req.user.userId;
     const holding = await Portfolio.findOne({ userId, symbol }).lean();
     const positionContext = holding
-      ? `The user already holds ${holding.quantity} share(s) of ${symbol} at an average buy price of ₹${holding.avgBuyPrice}.`
+      ? `The user already holds ${holding.quantity} share(s) of ${symbol} at an average buy price of ₹${toRupees(holding.avgBuyPriceInPaise)}.`
       : `The user does not currently hold any shares of ${symbol}.`;
 
     // Context-aware, multi-turn — replay recent chat history so follow-up

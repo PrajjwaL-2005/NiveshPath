@@ -3,6 +3,7 @@ import User from "../models/User.js";
 import Portfolio from "../models/Portfolio.js";
 import Trade from "../models/Trade.js";
 import { fetchStockPriceFromFinnhub } from "../utils/finnhubClient.js";
+import { toPaise, toRupees } from "../utils/money.js";
 
 /* ============================
    BUY STOCK (MARKET ORDER)
@@ -29,11 +30,12 @@ export const buyStock = async (req, res) => {
     return res.status(400).json({ message: "Price unavailable" });
   }
 
-  const totalCost = price * quantity;
+  const priceInPaise = toPaise(price);
+  const totalCostInPaise = priceInPaise * quantity;
   const session = await mongoose.startSession();
 
   try {
-    let finalBalance;
+    let finalBalanceInPaise;
 
     await session.withTransaction(async () => {
       const user = await User.findById(userId).session(session);
@@ -42,10 +44,13 @@ export const buyStock = async (req, res) => {
       }
 
       // ✅ Wallet check
-      if (user.virtualBalance < totalCost) {
+      if (user.virtualBalanceInPaise < totalCostInPaise) {
         throw Object.assign(new Error("Insufficient balance"), {
           statusCode: 400,
-          details: { required: totalCost, available: user.virtualBalance },
+          details: {
+            required: toRupees(totalCostInPaise),
+            available: toRupees(user.virtualBalanceInPaise),
+          },
         });
       }
 
@@ -57,40 +62,41 @@ export const buyStock = async (req, res) => {
 
       if (holding) {
         const newQty = holding.quantity + quantity;
-        const newAvgPrice =
-          (holding.avgBuyPrice * holding.quantity + price * quantity) /
-          newQty;
+        const newAvgPriceInPaise = Math.round(
+          (holding.avgBuyPriceInPaise * holding.quantity + priceInPaise * quantity) /
+            newQty
+        );
 
         holding.quantity = newQty;
-        holding.avgBuyPrice = newAvgPrice;
+        holding.avgBuyPriceInPaise = newAvgPriceInPaise;
         await holding.save({ session });
       } else {
         await Portfolio.create(
-          [{ userId: user._id, symbol, quantity, avgBuyPrice: price }],
+          [{ userId: user._id, symbol, quantity, avgBuyPriceInPaise: priceInPaise }],
           { session }
         );
       }
 
       // ✅ Deduct wallet
-      user.virtualBalance -= totalCost;
+      user.virtualBalanceInPaise -= totalCostInPaise;
       await user.save({ session });
 
       // ✅ Save trade history
       await Trade.create(
-        [{ userId: user._id, symbol, type: "BUY", price, quantity }],
+        [{ userId: user._id, symbol, type: "BUY", priceInPaise, quantity }],
         { session }
       );
 
-      finalBalance = user.virtualBalance;
+      finalBalanceInPaise = user.virtualBalanceInPaise;
     });
 
     return res.json({
       message: "Buy executed successfully",
       symbol,
-      executedPrice: price,
+      executedPrice: toRupees(priceInPaise),
       quantity,
-      totalCost,
-      virtualBalance: finalBalance,
+      totalCost: toRupees(totalCostInPaise),
+      virtualBalance: toRupees(finalBalanceInPaise),
     });
   } catch (error) {
     if (error.statusCode) {
@@ -127,11 +133,12 @@ export const sellStock = async (req, res) => {
     return res.status(400).json({ message: "Price unavailable" });
   }
 
-  const proceeds = price * quantity;
+  const priceInPaise = toPaise(price);
+  const proceedsInPaise = priceInPaise * quantity;
   const session = await mongoose.startSession();
 
   try {
-    let finalBalance;
+    let finalBalanceInPaise;
 
     await session.withTransaction(async () => {
       const holding = await Portfolio.findOne({
@@ -156,26 +163,26 @@ export const sellStock = async (req, res) => {
       // ✅ Credit wallet
       const user = await User.findByIdAndUpdate(
         userId,
-        { $inc: { virtualBalance: proceeds } },
+        { $inc: { virtualBalanceInPaise: proceedsInPaise } },
         { new: true, session }
       );
 
       // ✅ Save trade history
       await Trade.create(
-        [{ userId, symbol, type: "SELL", price, quantity }],
+        [{ userId, symbol, type: "SELL", priceInPaise, quantity }],
         { session }
       );
 
-      finalBalance = user.virtualBalance;
+      finalBalanceInPaise = user.virtualBalanceInPaise;
     });
 
     return res.json({
       message: "Sell executed successfully",
       symbol,
-      executedPrice: price,
+      executedPrice: toRupees(priceInPaise),
       quantity,
-      creditedAmount: proceeds,
-      virtualBalance: finalBalance,
+      creditedAmount: toRupees(proceedsInPaise),
+      virtualBalance: toRupees(finalBalanceInPaise),
     });
   } catch (error) {
     if (error.statusCode) {

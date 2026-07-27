@@ -1,12 +1,13 @@
 import bcrypt from "bcryptjs";
 import User from "../models/User.js";
 import { generateToken } from "../utils/jwt.js";
+import { toRupees } from "../utils/money.js";
 
 const toSafeUser = (user) => ({
   _id: user._id,
   name: user.name,
   email: user.email,
-  virtualBalance: user.virtualBalance,
+  virtualBalance: toRupees(user.virtualBalanceInPaise),
 });
 
 export const signup = async (req, res) => {
