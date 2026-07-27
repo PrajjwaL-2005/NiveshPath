@@ -14,11 +14,7 @@ export const getWatchlist = async (req, res) => {
 export const addToWatchlist = async (req, res) => {
   try {
     const userId = req.user.id || req.user._id || req.user.userId;
-    const symbol = String(req.body.symbol || "").trim().toUpperCase();
-
-    if (!symbol) {
-      return res.status(400).json({ message: "Symbol is required" });
-    }
+    const { symbol } = req.body;
 
     const item = await Watchlist.findOneAndUpdate(
       { userId, symbol },
@@ -36,7 +32,7 @@ export const addToWatchlist = async (req, res) => {
 export const removeFromWatchlist = async (req, res) => {
   try {
     const userId = req.user.id || req.user._id || req.user.userId;
-    const symbol = String(req.params.symbol || "").trim().toUpperCase();
+    const { symbol } = req.params;
 
     await Watchlist.findOneAndDelete({ userId, symbol });
     res.json({ message: "Removed from watchlist" });

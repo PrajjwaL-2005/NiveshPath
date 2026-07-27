@@ -21,11 +21,10 @@ export const getPortfolio = async (req, res) => {
   }
 };
 export const getTrades = async (req, res) => {
-  const page = Math.max(1, Number(req.query.page) || 1);
-  const limit = Math.min(50, Math.max(1, Number(req.query.limit) || 20));
+  const { page, limit } = req.query;
 
   const trades = await Trade.find({ userId: req.user.id })
-    .sort({ timestamp: -1 })
+    .sort({ createdAt: -1 })
     .skip((page - 1) * limit)
     .limit(limit)
     .lean();

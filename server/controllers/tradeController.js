@@ -9,12 +9,7 @@ import { toPaise, toRupees } from "../utils/money.js";
    BUY STOCK (MARKET ORDER)
 ============================ */
 export const buyStock = async (req, res) => {
-  const symbol = String(req.body.symbol || "").trim().toUpperCase();
-  const quantity = Number(req.body.quantity);
-
-  if (!symbol || !Number.isInteger(quantity) || quantity <= 0) {
-    return res.status(400).json({ message: "Quantity must be a positive integer" });
-  }
+  const { symbol, quantity } = req.body;
 
   // 🔑 userId from decoded JWT (middleware sets req.user = decoded)
   const userId = req.user.id || req.user._id || req.user.userId;
@@ -113,12 +108,7 @@ export const buyStock = async (req, res) => {
    SELL STOCK (MARKET ORDER)
 ============================ */
 export const sellStock = async (req, res) => {
-  const symbol = String(req.body.symbol || "").trim().toUpperCase();
-  const quantity = Number(req.body.quantity);
-
-  if (!symbol || !Number.isInteger(quantity) || quantity <= 0) {
-    return res.status(400).json({ message: "Quantity must be a positive integer" });
-  }
+  const { symbol, quantity } = req.body;
 
   const userId = req.user.id || req.user._id || req.user.userId;
   if (!userId) {
