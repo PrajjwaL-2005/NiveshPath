@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import StockSearch from "../components/trading/StockSearch";
 import TradePanel from "../components/trading/TradePanel";
+import PendingOrders from "../components/trading/PendingOrders";
 import { getStockDetails } from "../services/stockService";
 import Loader from "../components/common/Loader";
 
@@ -9,6 +10,7 @@ const Trading = () => {
   const { symbol } = useParams(); // optional at first
   const [stock, setStock] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [ordersRefreshToken, setOrdersRefreshToken] = useState(0);
 
   useEffect(() => {
     if (!symbol) {
@@ -50,8 +52,11 @@ const Trading = () => {
         <TradePanel
           symbol={symbol}
           price={stock.price.c}
+          onOrderPlaced={() => setOrdersRefreshToken((t) => t + 1)}
         />
       )}
+
+      <PendingOrders refreshToken={ordersRefreshToken} />
 
       {/* ℹ️ Empty state */}
       {!symbol && !loading && (

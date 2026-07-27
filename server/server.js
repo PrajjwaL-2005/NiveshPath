@@ -15,6 +15,8 @@ import userRoutes from "./routes/userRoutes.js";
 import newsRoutes from "./routes/newsRoutes.js";
 import aiRoutes from "./routes/aiRoutes.js";
 import watchlistRoutes from "./routes/watchlistRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js";
+import { startOrderWorker } from "./workers/orderWorker.js";
 
 
 
@@ -22,6 +24,7 @@ import watchlistRoutes from "./routes/watchlistRoutes.js";
 
 
 connectDB();
+startOrderWorker();
 
 const app = express();
 
@@ -43,6 +46,7 @@ app.use("/api/news", newsRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/watchlist", watchlistRoutes);
+app.use("/api/orders", orderRoutes);
 
 app.get("/", (req, res) => {
   res.send("🚀 StockPilot API running...");

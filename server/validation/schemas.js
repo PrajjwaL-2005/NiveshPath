@@ -86,3 +86,34 @@ export const stockChatSchema = z.object({
 ============================ */
 export const watchlistBodySchema = z.object({ symbol });
 export const watchlistParamSchema = z.object({ symbol });
+
+/* ============================
+   ORDERS (limit / stop-loss)
+============================ */
+export const createOrderSchema = z.object({
+  symbol,
+  side: z.enum(["BUY", "SELL"], { message: "side must be BUY or SELL" }),
+  orderType: z.enum(["LIMIT", "STOP_LOSS"], {
+    message: "orderType must be LIMIT or STOP_LOSS",
+  }),
+  triggerPrice: z.coerce
+    .number("Trigger price must be a number")
+    .positive("Trigger price must be positive"),
+  quantity: z.coerce
+    .number("Quantity must be a number")
+    .int("Quantity must be a whole number")
+    .positive("Quantity must be a positive integer"),
+  expiresAt: z.coerce.date("Invalid expiry date").optional(),
+});
+
+export const orderIdParamSchema = z.object({
+  id: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid order id"),
+});
+
+export const listOrdersQuerySchema = z.object({
+  status: z
+    .enum(["PENDING", "PROCESSING", "FILLED", "CANCELLED", "EXPIRED", "FAILED"])
+    .optional(),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(50).default(20),
+});
